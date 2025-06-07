@@ -19,7 +19,7 @@ warnings.filterwarnings('ignore')
 import os
 os.makedirs('../reports/figures', exist_ok=True)
 
-# --- Βοηθητικές Συναρτήσεις ---
+# --- Συναρτήσεις ---
 
 def load_and_preprocess_data(filepath, target_column, dataset_name=""):
     """
@@ -36,7 +36,7 @@ def load_and_preprocess_data(filepath, target_column, dataset_name=""):
         
         # Έλεγχος αν υπάρχει η στήλη στόχος
         if target_column not in df.columns:
-            print(f"⚠️  Η στήλη '{target_column}' δεν υπάρχει στο dataset.")
+            print(f"Η στήλη '{target_column}' δεν υπάρχει στο dataset.")
             return None, None, None, None, None, True
         
         # Αφαίρεση NaN από τη στήλη στόχο
@@ -60,7 +60,7 @@ def load_and_preprocess_data(filepath, target_column, dataset_name=""):
         
         # Έλεγχος για κενό dataset
         if X.empty or len(X) == 0:
-            print(f"❌ Κενό dataset μετά την προεπεξεργασία.")
+            print(f"Κενό dataset μετά την προεπεξεργασία.")
             return None, None, None, None, None, True
         
         # Label encoding
@@ -76,7 +76,7 @@ def load_and_preprocess_data(filepath, target_column, dataset_name=""):
         
         # Έλεγχος για επαρκή αριθμό κλάσεων
         if len(unique_classes) < 2:
-            print(f"❌ Μόνο {len(unique_classes)} κλάση βρέθηκε. Παράλειψη.")
+            print(f"Μόνο {len(unique_classes)} κλάση βρέθηκε. Παράλειψη.")
             return None, None, None, None, None, True
         
         # Train-test split με stratification
@@ -100,7 +100,7 @@ def load_and_preprocess_data(filepath, target_column, dataset_name=""):
         return X_train_scaled, X_test_scaled, y_train, y_test, le, False
         
     except Exception as e:
-        print(f"❌ Σφάλμα κατά τη φόρτωση: {str(e)}")
+        print(f"Σφάλμα κατά τη φόρτωση: {str(e)}")
         return None, None, None, None, None, True
 
 def balance_dataset(X_train, y_train, strategy='auto'):
@@ -113,26 +113,26 @@ def balance_dataset(X_train, y_train, strategy='auto'):
     imbalance_ratio = max(class_counts) / min(class_counts)
     
     if imbalance_ratio < 2:
-        print("  ✓ Το dataset είναι ήδη σχετικά ισορροπημένο")
+        print("  Το dataset είναι ήδη σχετικά ισορροπημένο")
         return X_train, y_train
     
-    print(f"  ⚠️  Ανισορροπία {imbalance_ratio:.1f}:1 - Εφαρμογή εξισορρόπησης...")
+    print(f"  Ανισορροπία {imbalance_ratio:.1f}:1 - Εφαρμογή εξισορρόπησης...")
     
     # Επιλογή στρατηγικής
     min_class_count = min(class_counts)
     
     if min_class_count < 6:  # Πολύ λίγα δείγματα για SMOTE
-        print(f"  → Χρήση RandomOverSampler (min samples: {min_class_count})")
+        print(f"  Χρήση RandomOverSampler (min samples: {min_class_count})")
         sampler = RandomOverSampler(random_state=42)
     else:
         try:
             # Προσπάθεια για SMOTE
             k_neighbors = min(5, min_class_count - 1)
             sampler = SMOTE(random_state=42, k_neighbors=k_neighbors)
-            print(f"  → Χρήση SMOTE με k_neighbors={k_neighbors}")
+            print(f"  Χρήση SMOTE με k_neighbors={k_neighbors}")
         except:
             # Fallback σε RandomOverSampler
-            print(f"  → Fallback σε RandomOverSampler")
+            print(f"  Fallback σε RandomOverSampler")
             sampler = RandomOverSampler(random_state=42)
     
     # Εφαρμογή sampling
@@ -150,7 +150,7 @@ def train_svm_model(X_train, X_test, y_train, y_test, label_encoder=None):
     """
     Εκπαιδεύει SVM μοντέλο
     """
-    print("\n📊 Εκπαίδευση SVM...")
+    print("\nΕκπαίδευση SVM...")
     start_time = time.time()
     
     # Εξισορρόπηση dataset αν χρειάζεται
@@ -158,7 +158,7 @@ def train_svm_model(X_train, X_test, y_train, y_test, label_encoder=None):
     
     # Επιλογή SVM implementation
     if len(X_train_balanced) > 5000:
-        print("  → Χρήση LinearSVC για μεγάλο dataset")
+        print("  Χρήση LinearSVC για μεγάλο dataset")
         model = LinearSVC(random_state=42, max_iter=2000, dual=False)
     else:
         # Υπολογισμός class weights
@@ -189,7 +189,7 @@ def train_mlp_model(X_train, X_test, y_train, y_test, label_encoder=None):
     """
     Εκπαιδεύει Neural Network μοντέλο
     """
-    print("\n🧠 Εκπαίδευση Neural Network...")
+    print("\nΕκπαίδευση Neural Network...")
     start_time = time.time()
     
     # Εξισορρόπηση dataset
@@ -235,7 +235,7 @@ def train_mlp_model(X_train, X_test, y_train, y_test, label_encoder=None):
     
     # Χρόνος εκπαίδευσης
     training_time = time.time() - start_time
-    print(f"  ✓ Ολοκληρώθηκε σε {training_time:.2f} δευτερόλεπτα")
+    print(f"  Ολοκληρώθηκε σε {training_time:.2f} δευτερόλεπτα")
     print(f"  Iterations: {model.n_iter_}")
     
     return model, y_pred, training_time
@@ -244,7 +244,7 @@ def evaluate_model(y_test, y_pred, label_encoder=None, model_name=""):
     """
     Αξιολογεί το μοντέλο και επιστρέφει μετρικές
     """
-    print(f"\n📈 Αξιολόγηση {model_name}:")
+    print(f"\nΑξιολόγηση {model_name}:")
     
     # Βασικές μετρικές
     accuracy = accuracy_score(y_test, y_pred)
@@ -441,7 +441,7 @@ def main():
         print(f"{'='*80}")
         
         # --- TASK 1: Πρόβλεψη Label (Benign/Malicious) ---
-        print(f"\n🎯 TASK 1: Πρόβλεψη Label (Benign/Malicious)")
+        print(f"\nTASK 1: Πρόβλεψη Label (Benign/Malicious)")
         print("-"*60)
         
         X_train, X_test, y_train, y_test, le_label, skip = load_and_preprocess_data(
@@ -504,7 +504,7 @@ def main():
                 )
         
         # --- TASK 2: Πρόβλεψη Traffic Type ---
-        print(f"\n🎯 TASK 2: Πρόβλεψη Traffic Type")
+        print(f"\nTASK 2: Πρόβλεψη Traffic Type")
         print("-"*60)
         
         X_train, X_test, y_train, y_test, le_traffic, skip = load_and_preprocess_data(
@@ -559,12 +559,12 @@ def main():
     results_df = pd.DataFrame(all_results)
     
     # Εμφάνιση πίνακα αποτελεσμάτων
-    print("\n📊 Πίνακας Αποτελεσμάτων:")
+    print("\nΠίνακας Αποτελεσμάτων:")
     print(results_df.to_string(index=False, float_format='%.4f'))
     
     # Αποθήκευση αποτελεσμάτων σε CSV
     results_df.to_csv('../reports/model_results.csv', index=False)
-    print("\n✅ Αποτελέσματα αποθηκεύτηκαν στο: ../reports/model_results.csv")
+    print("\nΑποτελέσματα αποθηκεύτηκαν στο: ../reports/model_results.csv")
     
     # --- ΑΝΑΛΥΣΗ ΚΑΛΥΤΕΡΩΝ ΜΟΝΤΕΛΩΝ ---
     print(f"\n{'='*80}")
@@ -577,12 +577,12 @@ def main():
         best_label_idx = label_results['F1-Score'].idxmax()
         best_label = label_results.loc[best_label_idx]
         
-        print(f"\n🏆 Καλύτερο μοντέλο για πρόβλεψη Label (Benign/Malicious):")
-        print(f"   • Dataset: {best_label['Dataset']}")
-        print(f"   • Model: {best_label['Model']}")
-        print(f"   • F1-Score: {best_label['F1-Score']:.4f}")
-        print(f"   • Balanced Accuracy: {best_label['Balanced Accuracy']:.4f}")
-        print(f"   • Training Time: {best_label['Training Time']:.2f}s")
+        print(f"\nΚαλύτερο μοντέλο για πρόβλεψη Label (Benign/Malicious):")
+        print(f" • Dataset: {best_label['Dataset']}")
+        print(f" • Model: {best_label['Model']}")
+        print(f" • F1-Score: {best_label['F1-Score']:.4f}")
+        print(f" • Balanced Accuracy: {best_label['Balanced Accuracy']:.4f}")
+        print(f" • Training Time: {best_label['Training Time']:.2f}s")
     
     # Καλύτερο μοντέλο για Traffic Type prediction
     traffic_results = results_df[results_df['Target'] == 'Traffic Type']
@@ -590,12 +590,12 @@ def main():
         best_traffic_idx = traffic_results['F1-Score'].idxmax()
         best_traffic = traffic_results.loc[best_traffic_idx]
         
-        print(f"\n🏆 Καλύτερο μοντέλο για πρόβλεψη Traffic Type:")
-        print(f"   • Dataset: {best_traffic['Dataset']}")
-        print(f"   • Model: {best_traffic['Model']}")
-        print(f"   • F1-Score: {best_traffic['F1-Score']:.4f}")
-        print(f"   • Balanced Accuracy: {best_traffic['Balanced Accuracy']:.4f}")
-        print(f"   • Training Time: {best_traffic['Training Time']:.2f}s")
+        print(f"\nΚαλύτερο μοντέλο για πρόβλεψη Traffic Type:")
+        print(f" • Dataset: {best_traffic['Dataset']}")
+        print(f" • Model: {best_traffic['Model']}")
+        print(f" • F1-Score: {best_traffic['F1-Score']:.4f}")
+        print(f" • Balanced Accuracy: {best_traffic['Balanced Accuracy']:.4f}")
+        print(f" • Training Time: {best_traffic['Training Time']:.2f}s")
     
     # --- ΣΥΓΚΡΙΤΙΚΗ ΑΝΑΛΥΣΗ ---
     print(f"\n{'='*80}")
@@ -603,24 +603,24 @@ def main():
     print(f"{'='*80}")
     
     # Μέσοι όροι ανά μοντέλο
-    print("\n📊 Μέση απόδοση ανά μοντέλο:")
+    print("\nΜέση απόδοση ανά μοντέλο:")
     model_avg = results_df.groupby('Model')[['F1-Score', 'Balanced Accuracy']].mean()
     print(model_avg.round(4))
     
     # Μέσοι όροι ανά dataset
-    print("\n📊 Μέση απόδοση ανά dataset:")
+    print("\nΜέση απόδοση ανά dataset:")
     dataset_avg = results_df.groupby('Dataset')[['F1-Score', 'Balanced Accuracy']].mean()
     print(dataset_avg.round(4))
     
     # Μέσοι όροι ανά target
-    print("\n📊 Μέση απόδοση ανά target:")
+    print("\nΜέση απόδοση ανά target:")
     target_avg = results_df.groupby('Target')[['F1-Score', 'Balanced Accuracy']].mean()
     print(target_avg.round(4))
     
     # Δημιουργία γραφημάτων
     create_results_visualization(results_df)
     
-    print("\n✅ Η ανάλυση ολοκληρώθηκε επιτυχώς!")
+    print("\nΗ ανάλυση ολοκληρώθηκε επιτυχώς!")
 
 if __name__ == "__main__":
     main()

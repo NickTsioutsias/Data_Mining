@@ -26,7 +26,7 @@ print(sample_df.dtypes)
 print("\n=== ΥΠΟΛΟΓΙΣΜΟΣ ΒΑΣΙΚΩΝ ΣΤΑΤΙΣΤΙΚΩΝ (με chunking) ===\n")
 
 # Αρχικοποίηση μεταβλητών για στατιστικά
-chunk_size = 50000  # Μέγεθος κάθε chunk
+chunk_size = 50000
 n_rows = 0
 numeric_cols = sample_df.select_dtypes(include=[np.number]).columns.tolist()
 
@@ -91,7 +91,7 @@ for col in numeric_cols:
         }
 
 print("\nΒασικά στατιστικά για αριθμητικές στήλες:")
-print(statistics.T.head(10))  # Εμφανίζουμε τις πρώτες 10 στήλες
+print(statistics.T.head(10))  
 
 # 3. Ανάλυση κατηγορικών μεταβλητών
 print("\n=== ΑΝΑΛΥΣΗ ΚΑΤΗΓΟΡΙΚΩΝ ΜΕΤΑΒΛΗΤΩΝ ===\n")
@@ -116,8 +116,6 @@ print(f"Μέγεθος δείγματος για γραφήματα: {len(sample
 # Δημιουργία γραφημάτων για τις πιο σημαντικές στήλες
 fig, axes = plt.subplots(2, 2, figsize=(15, 10))
 fig.suptitle('Κατανομές Επιλεγμένων Χαρακτηριστικών', fontsize=16)
-
-# Ρυθμίσεις απόστασης
 plt.subplots_adjust(wspace=0.14, hspace=0.315, top=0.91, bottom=0.075)
 
 # Επιλογή στηλών για visualization
@@ -142,9 +140,8 @@ for idx, col in enumerate(available_cols[:4]):
     ax.set_ylabel('Συχνότητα')
     ax.grid(True, alpha=0.3)
 
-plt.savefig('../data/reports/figures/distributions.png', dpi=300, bbox_inches='tight')
+plt.savefig('../reports/figures/distributions.png', dpi=300, bbox_inches='tight')
 plt.show()
-
 
 # 5. Ανάλυση ετικετών (Labels)
 print("\n=== ΑΝΑΛΥΣΗ ΕΤΙΚΕΤΩΝ ===\n")
@@ -203,7 +200,7 @@ sns.heatmap(correlation_matrix, annot=True, fmt='.2f', cmap='coolwarm', center=0
             square=True, linewidths=0.5, cbar_kws={"shrink": 0.8})
 plt.title('Πίνακας Συσχετίσεων Βασικών Χαρακτηριστικών', fontsize=14)
 plt.subplots_adjust(bottom=0.31, right=0.78, top=0.95)
-plt.savefig('../data/reports/figures/correlations.png', dpi=300, bbox_inches='tight')
+plt.savefig('../reports/figures/correlations.png', dpi=300, bbox_inches='tight')
 plt.show()
 
 
@@ -228,24 +225,8 @@ print("Κατανομή Πρωτοκόλλων:")
 for protocol, count in sorted(protocol_counts.items(), key=lambda x: x[1], reverse=True):
     protocol_name = protocol_mapping.get(protocol, f'Unknown ({protocol})')
     print(f"{protocol_name}: {count:,} ({count/n_rows*100:.3f}%)")
-
-# 8. Ανίχνευση μοτίβων
-print("\n=== ΑΝΑΛΥΣΗ ΜΟΤΙΒΩΝ ===\n")
-
-# Ανάλυση χρονικών μοτίβων αν υπάρχει timestamp
-if 'Timestamp' in sample_df.columns:
-    print("Ανάλυση χρονικών μοτίβων...")
-    # Εδώ μπορείτε να προσθέσετε ανάλυση timestamps
     
 # Ανάλυση μεγέθους πακέτων
 print("\nΜοτίβα μεγέθους πακέτων:")
 print(f"Μέσο μέγεθος Forward πακέτων: {statistics['Fwd Packet Length Mean']['mean']:.2f}")
 print(f"Μέσο μέγεθος Backward πακέτων: {statistics['Bwd Packet Length Mean']['mean']:.2f}")
-
-# Σύνοψη ευρημάτων
-print("\n=== ΣΥΝΟΨΗ ΕΥΡΗΜΑΤΩΝ ===\n")
-print("1. Το dataset περιέχει δεδομένα κίνησης δικτύου με διάφορα χαρακτηριστικά ροών")
-print("2. Υπάρχουν τόσο καλοήθεις (Benign) όσο και κακόβουλες κινήσεις")
-print("3. Τα κύρια πρωτόκολλα είναι TCP και UDP")
-print("4. Παρατηρούνται συσχετίσεις μεταξύ του μεγέθους πακέτων και της διάρκειας ροής")
-print("5. Η κατανομή πολλών χαρακτηριστικών είναι ασύμμετρη με πολλές ακραίες τιμές")

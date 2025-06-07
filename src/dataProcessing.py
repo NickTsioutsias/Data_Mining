@@ -32,8 +32,6 @@ columns_to_remove = []
 
 # Αφαιρούμε το Flow ID (μοναδικός identifier χωρίς predictive value)
 columns_to_remove.append('Flow ID')
-
-# Αφαιρούμε IPs αν δεν θέλουμε network-specific μοντέλο
 columns_to_remove.extend(['Src IP', 'Dst IP'])
 
 # Αφαιρούμε το Timestamp για γενίκευση
@@ -42,7 +40,7 @@ columns_to_remove.append('Timestamp')
 # Βρίσκουμε στήλες με μηδενική ή πολύ χαμηλή διακύμανση
 numeric_cols = sample_df.select_dtypes(include=[np.number]).columns
 for col in numeric_cols:
-    if sample_df[col].std() < 0.01:  # Πολύ χαμηλή διακύμανση
+    if sample_df[col].std() < 0.01:
         columns_to_remove.append(col)
 
 # Αφαιρούμε URG flags που είναι σχεδόν πάντα 0
@@ -60,7 +58,6 @@ print(f"Στήλες που θα αφαιρεθούν: {len(columns_to_remove)}"
 # 2. Δημιουργία νέων συνδυαστικών features
 print("\n2. Δημιουργία συνδυαστικών χαρακτηριστικών...")
 
-# Feature engineering function
 def create_combined_features(df):
     # Λόγος Forward/Backward πακέτων
     df['Fwd_Bwd_Packet_Ratio'] = (df['Total Fwd Packet'] + 1) / (df['Total Bwd packets'] + 1)
@@ -134,7 +131,6 @@ print("\n=== ΜΕΡΟΣ 2: ΜΕΙΩΣΗ ΓΡΑΜΜΩΝ ===\n")
 total_rows = sum(1 for _ in open(file_path)) - 1  # -1 για header
 print(f"Συνολικός αριθμός γραμμών: {total_rows:,}")
 
-# Πρώτα, ας δούμε την πραγματική κατανομή των κλάσεων
 print("\n--- Ανάλυση κατανομής κλάσεων ---")
 label_counts = {}
 traffic_type_counts = {}
